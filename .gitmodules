@@ -1,0 +1,3 @@
+[submodule "sollaris/tests/googletest"]
+	path = sollaris/tests/googletest
+	url = https://github.com/google/googletest.git
