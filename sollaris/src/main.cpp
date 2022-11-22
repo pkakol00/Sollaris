@@ -2,14 +2,16 @@
 #include "physics/PhysicsEngine.h"
 #include "io/IO.h"
 
-void foo(int a, double b) {
-  std::cout << a << b << std::endl;
-}
+#include <gtkmm.h>
 
-int main()
+int main(int argc, char *argv[])
 {
-  GraphicsEngine ge;
-  ge.subscribe_to_radious_change(&foo);
-  LOG("foo");
-  ge.radious_change_event_function(12, .2);
+  auto app =
+    Gtk::Application::create(argc, argv,
+      "org.gtkmm.examples.base");
+
+  Gtk::Window window;
+  window.set_default_size(200, 200);
+
+  return app->run(window);
 }
