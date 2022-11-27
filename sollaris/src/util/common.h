@@ -44,7 +44,7 @@ public:
   friend Vec3 operator/(Vec3, const double&);
 };
 
-class PlanetData{
+struct PlanetData {
   double mass;
   double radious;
   double velocity;
@@ -52,7 +52,7 @@ class PlanetData{
   int planet_id;
 };
 
-class PlanetPosition{
+struct PlanetPosition{
   std::queue<Vec3> positions;
   int planet_id;
 };
