@@ -18,6 +18,7 @@ public:
 
   double length() const;
   Vec3 normalized() const;
+  Vec3 squared() const;
 
   Vec3& operator+=(const Vec3&);
   Vec3& operator-=(const Vec3&);
@@ -31,8 +32,6 @@ public:
 
   Vec3 operator+() const;
   Vec3 operator-() const;
-
-  friend Vec3 square(Vec3);
 
   friend Vec3 operator+(Vec3, const Vec3&);
   friend Vec3 operator-(Vec3, const Vec3&);
