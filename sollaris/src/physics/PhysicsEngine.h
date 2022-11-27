@@ -11,6 +11,8 @@ class PhysicsEngine {
   std::shared_ptr<std::vector<PlanetData>> data;
   double interval;
   const double G;
+
+  void updatePositions();
 public:
   PhysicsEngine(std::shared_ptr<std::vector<PlanetPosition>>, std::shared_ptr<std::vector<PlanetData>>, double);
   void update();
