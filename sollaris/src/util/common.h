@@ -47,7 +47,7 @@ public:
 struct PlanetData {
   double mass;
   double radious;
-  double velocity;
+  Vec3 velocity;
   Vec3 colour;
   int planet_id;
 };
