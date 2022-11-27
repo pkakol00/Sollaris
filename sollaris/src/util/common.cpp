@@ -1,6 +1,33 @@
 #include "common.h"
 #include <cmath>
 
+Vec3::Vec3() : x(0), y(0), z(0) {}
+
+Vec3::Vec3(double x, double y, double z) : x(x), y(y), z(z) {}
+
+Vec3::Vec3(const Vec3& b) : x(b.x), y(b.y), z(b.z) {}
+
+Vec3::Vec3(Vec3&& b) : x(b.x), y(b.y), z(b.z) {
+    b.x = 0;
+    b.y = 0;
+    b.z = 0;
+}
+
+Vec3::~Vec3() {};
+
+Vec3& Vec3::operator=(const Vec3& rhs) {
+    this->x = rhs.x;
+    this->y = rhs.y;
+    this->z = rhs.z;
+    return *this;
+}
+
+Vec3& Vec3::operator=(Vec3&& rhs) {
+    *this = rhs;
+    rhs = Vec3(0, 0, 0);
+    return *this;
+}
+
 double Vec3::length() const {
     Vec3 tmp = square(*this);
     return std::sqrt(tmp.x + tmp.y + tmp.z);
