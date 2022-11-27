@@ -5,6 +5,7 @@
 #include "../util/common.h"
 #include <vector>
 #include <memory>
+#include <cmath>
 
 class PhysicsEngine {
   std::shared_ptr<std::vector<PlanetPosition>> position;
@@ -12,6 +13,7 @@ class PhysicsEngine {
   double interval;
   const double G;
 
+  void updateVelocities();
   void updatePositions();
 public:
   PhysicsEngine(std::shared_ptr<std::vector<PlanetPosition>>, std::shared_ptr<std::vector<PlanetData>>, double);
