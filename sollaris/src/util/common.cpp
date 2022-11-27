@@ -29,11 +29,16 @@ Vec3& Vec3::operator=(Vec3&& rhs) {
 }
 
 double Vec3::length() const {
-    Vec3 tmp = square(*this);
+    Vec3 tmp = this->squared();
     return std::sqrt(tmp.x + tmp.y + tmp.z);
 }
+
 Vec3 Vec3::normalized() const {
     return *this / this->length();
+}
+
+Vec3 Vec3::squared() const {
+    return (*this) * (*this);
 }
 
 Vec3& Vec3::operator+=(const Vec3& rhs) {
@@ -95,10 +100,6 @@ Vec3 Vec3::operator+() const {
 }
 Vec3 Vec3::operator-() const {
     return (*this) * -1;
-}
-
-Vec3 square(Vec3 lhs) {
-    return lhs * lhs;
 }
 
 Vec3 operator+(Vec3 lhs, const Vec3& rhs) {
