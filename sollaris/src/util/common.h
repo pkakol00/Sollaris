@@ -1,14 +1,7 @@
 #ifndef __MATH_UTIL_H__
 #define __MATH_UTIL_H__
 
-#include <queue>
-
-class Serializable{
-public:
-  virtual Serializable* deserialize(const std::string& data) = 0;
-  virtual std::string& serialize() = 0;
-  virtual ~Serializable() = default;
-};
+#include <deque>
 
 class Vec3 {
 public:
@@ -51,25 +44,19 @@ public:
   friend Vec3 operator/(Vec3, const double&);
 };
 
-class PlanetData : public Serializable{
+class PlanetData{
 public:
-  double mass, radious, planet_id;
-  Vec3 velocity, colour;
-  PlanetData* deserialize(const std::string& data);
-  std::string& serialize();
-  PlanetData();
-  PlanetData(double, double, Vec3, Vec3, int);
-  ~PlanetData();
+  double mass;
+  double radious;
+  double velocity;
+  Vec3 colour;
+  int planet_id;
 };
 
-class PlanetPosition : public Serializable{
+class PlanetPosition{
 public:
-  std::queue<Vec3> positions;
+  std::deque<Vec3> positions;
   int planet_id;
-  PlanetPosition* deserialize(const std::string& data);
-  std::string& serialize();
-  PlanetPosition(std::queue<Vec3> pos, int pid);
-  ~PlanetPosition();
 };
 
 #endif // __MATH_UTIL_H__
