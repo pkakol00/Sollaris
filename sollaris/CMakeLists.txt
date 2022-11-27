@@ -30,11 +30,17 @@ set(PHYSICS_SOURCES
   src/physics/PhysicsEngine.h
 )
 
+set(UTILS_SOURCES
+  src/util/common.cpp
+  src/util/common.h
+)
+
 set(SOURCES
   src/main.cpp
   ${GRAPHIC_SOURCES}
   ${IO_SOURCES}
   ${PHYSICS_SOURCES}
+  ${UTILS_SOURCES}
 )
 
 find_package(SFML 2 COMPONENTS graphics window audio 
