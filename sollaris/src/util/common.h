@@ -7,6 +7,15 @@ class Vec3 {
 public:
   double x, y, z;
 
+  Vec3();
+  Vec3(double, double, double);
+  Vec3(const Vec3&);
+  Vec3(Vec3&& b);
+  ~Vec3();
+
+  Vec3& operator=(const Vec3&);
+  Vec3& operator=(Vec3&&);
+
   double length() const;
   Vec3 normalized() const;
 
