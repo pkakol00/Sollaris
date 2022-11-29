@@ -27,18 +27,22 @@ int main() {
 
   PlanetPosition A_pos = {std::queue<Vec3>({{1.0, 0.0, 0.0}}), 0};
   PlanetPosition B_pos = {std::queue<Vec3>({{-1.0, 0.0, 0.0}}), 1};
-  std::vector<PlanetPosition> planet_pos = {A_pos, B_pos};
+  PlanetPosition C_pos = {std::queue<Vec3>({{-2.0, 0.0, 0.0}}), 1};
+
+  std::vector<PlanetPosition> planet_pos = {A_pos, B_pos, C_pos};
   auto planet_pos_ptr = std::make_shared<std::vector<PlanetPosition>>(planet_pos);
 
   graphics.setPlanetPositions(planet_pos_ptr);
-
+  
   while (true) {
 
     // mock-up of physics
     planet_pos_ptr->at(0).positions.push(cast(get_position(0.0, 0.1)));
     planet_pos_ptr->at(1).positions.push(cast(get_position(180.0, 0.1)));
+    planet_pos_ptr->at(2).positions.push(cast(get_position(90, 0.2)));
     planet_pos_ptr->at(0).positions.pop();
     planet_pos_ptr->at(1).positions.pop();
+    planet_pos_ptr->at(2).positions.pop();
 
     if (!graphics.display()) break;
   }

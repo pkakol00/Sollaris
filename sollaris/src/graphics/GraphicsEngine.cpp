@@ -68,7 +68,7 @@ void GraphicsEngine::init() {
 
 void GraphicsEngine::setPlanetPositions(std::shared_ptr<std::vector<PlanetPosition>> v) {
   planet_positions = v;
-  planets_drawables = std::vector<Planet>(v->size());
+  planets_drawables = std::vector<Planet>(v->size(), Planet(20, .5));
 
   for (int i = 0; i < planets_drawables.size(); i ++) {
     planets_drawables[i].scale = glm::vec3(.2);

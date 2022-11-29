@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.0.0)
+cmake_minimum_required(VERSION 3.12.0)
 
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(GTKMM REQUIRED gtkmm-3.0)
@@ -12,6 +12,8 @@ set(GRAPHIC_SOURCES
   src/graphics/drawable/Drawable.cpp
   src/graphics/drawable/Triangle.h
   src/graphics/drawable/Triangle.cpp
+  src/graphics/drawable/Planet.cpp
+  src/graphics/drawable/Planet.h
 )
 
 set(IO_SOURCES

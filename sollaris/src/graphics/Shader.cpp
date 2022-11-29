@@ -7,12 +7,15 @@
 #include <cstring>
 
 #include <glm/gtc/type_ptr.hpp>
+#include <filesystem>
 
 namespace ge {
 
 Shader::Shader(const std::string& file_path) {
-  uint vertex_id = createShader(file_path + ".vs", GL_VERTEX_SHADER);
-  uint fragment_id = createShader(file_path + ".fs", GL_FRAGMENT_SHADER);
+  auto prefix =
+      std::filesystem::canonical("/proc/self/exe").parent_path().string() + "/";
+  uint vertex_id = createShader(prefix + file_path + ".vs", GL_VERTEX_SHADER);
+  uint fragment_id = createShader(prefix + file_path + ".fs", GL_FRAGMENT_SHADER);
   shader_id = glCreateProgram();
 
   glAttachShader(shader_id, vertex_id);
