@@ -2,6 +2,9 @@
 
 #include <glm/gtc/type_ptr.hpp>
 
+Drawable::Drawable()
+  : position(0.0), scale(1.0), rotation(0.0) {}
+
 glm::mat4 Drawable::getModelMatrix() {
   glm::mat4 mat = glm::mat4(1.0);
 

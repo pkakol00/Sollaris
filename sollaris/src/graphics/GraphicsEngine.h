@@ -10,7 +10,8 @@
 #include <memory>
 #include "Shader.h"
 
-#include <graphics/drawable/Triangle.h>
+#include <util/common.h>
+#include <graphics/drawable/Planet.h>
 class GraphicsEngine {
   CREATE_EVENT(planet_addition, void, int);
   CREATE_EVENT(planet_removeal, void, int);
@@ -25,9 +26,13 @@ public:
   GraphicsEngine();
 
   bool display();
+  void setPlanetPositions(std::shared_ptr<std::vector<PlanetPosition>>);
 private:
   std::shared_ptr<sf::Window> window_ptr;
   ge::Shader shader;
+
+  std::shared_ptr<std::vector<PlanetPosition>> planet_positions;
+  std::vector<Planet> planets_drawables;
 
   bool pollEvents();
   void init();

@@ -9,6 +9,7 @@ public:
 };
 
 class PlanetData{
+public:
   double mass;
   double radious;
   double velocity;
@@ -17,6 +18,7 @@ class PlanetData{
 };
 
 class PlanetPosition{
+public:
   std::queue<Vec3> positions;
   int planet_id;
 };

@@ -42,19 +42,16 @@ bool GraphicsEngine::pollEvents() {
 }
 
 bool GraphicsEngine::display() {
-  static Triangle t;
-
-  t.position = glm::vec3(0);
-  t.rotation = glm::vec3(0);
-  t.scale    = glm::vec3(1);
-
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   auto res = pollEvents();
   shader.bind();
 
-  shader.setUniformVec4("my_color", glm::vec4(1.0));
-  shader.setUniformMat4("model", t.getModelMatrix());
-  t.draw();
+  for (int i = 0; i < planets_drawables.size(); i ++) {
+    auto v = planet_positions->at(i).positions.front();
+    planets_drawables[i].position = glm::vec3(v.x, v.y, v.z);
+    shader.setUniformMat4("model", planets_drawables[i].getModelMatrix());
+    planets_drawables[i].draw();
+  }
 
   window_ptr->display();
   return res;
@@ -67,4 +64,13 @@ void GraphicsEngine::init() {
         std::string(reinterpret_cast<const char*>(glewGetErrorString(err))));
   }
   LOG(std::string(reinterpret_cast<const char*>(glGetString(GL_VERSION))));
+}
+
+void GraphicsEngine::setPlanetPositions(std::shared_ptr<std::vector<PlanetPosition>> v) {
+  planet_positions = v;
+  planets_drawables = std::vector<Planet>(v->size());
+
+  for (int i = 0; i < planets_drawables.size(); i ++) {
+    planets_drawables[i].scale = glm::vec3(.2);
+  }
 }
