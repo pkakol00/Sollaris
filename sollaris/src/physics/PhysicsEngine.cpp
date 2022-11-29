@@ -13,6 +13,12 @@ void PhysicsEngine::updateVelocities() {
       const Vec3 bPos = position->at(j).positions.back();
       const PlanetData bData = data->at(j);
 
+      if(aData.planet_id == bData.planet_id) {
+          LOG("Skip updating velocity with self");
+          continue;
+      }
+      LOG("Updating velocity with object with id: " + std::to_string(data->at(j).planet_id));
+
       Vec3 sqrDist = aPos.squared() + bPos.squared();
       Vec3 forceDir = sqrDist.normalized();
       Vec3 force = forceDir * G * aData.mass * bData.mass / sqrDist;
