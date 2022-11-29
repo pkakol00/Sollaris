@@ -1,5 +1,4 @@
 #include "common.h"
-#include <cmath>
 
 Vec3::Vec3() : x(0), y(0), z(0) {}
 
@@ -128,4 +127,10 @@ Vec3 operator*(Vec3 lhs, const double& rhs) {
 }
 Vec3 operator/(Vec3 lhs, const double& rhs) {
     return lhs /= rhs;
+}
+
+std::ostream& operator<<(std::ostream& os, const Vec3& obj)
+{
+    os << "(" << obj.x << "," << obj.y << "," << obj.z << ")";
+    return os;
 }

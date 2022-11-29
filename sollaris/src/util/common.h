@@ -2,6 +2,8 @@
 #define __MATH_UTIL_H__
 
 #include <queue>
+#include <cmath>
+#include <ostream>
 
 class Vec3 {
 public:
@@ -42,6 +44,8 @@ public:
   friend Vec3 operator-(Vec3, const double&);
   friend Vec3 operator*(Vec3, const double&);
   friend Vec3 operator/(Vec3, const double&);
+
+  friend std::ostream& operator<<(std::ostream&, const Vec3&);
 };
 
 struct PlanetData {
