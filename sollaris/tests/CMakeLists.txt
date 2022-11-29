@@ -8,6 +8,9 @@ set(TEST_NAME my_tests)
 set(TEST_SOURCES
   # Sources for tests
   DummyTest.cpp
+  Vec3Test.cpp
+  ../src/util/common.cpp
+  ../src/util/common.h
 )
 
 add_subdirectory(googletest)
