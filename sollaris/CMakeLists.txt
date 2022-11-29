@@ -9,6 +9,7 @@ set(GRAPHIC_SOURCES
   src/graphics/Shader.cpp
   src/graphics/Shader.h
   src/graphics/drawable/Drawable.h
+  src/graphics/drawable/Drawable.cpp
   src/graphics/drawable/Triangle.h
   src/graphics/drawable/Triangle.cpp
 )

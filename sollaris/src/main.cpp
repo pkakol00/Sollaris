@@ -2,7 +2,7 @@
 #include "physics/PhysicsEngine.h"
 #include "io/IO.h"
 
-#include <gtkmm.h>
+/* #include <gtkmm.h>
 
 int main(int argc, char *argv[])
 {
@@ -14,4 +14,11 @@ int main(int argc, char *argv[])
   window.set_default_size(200, 200);
 
   return app->run(window);
+} */
+
+int main() {
+  GraphicsEngine graphics;
+  while (true) {
+    if (!graphics.display()) break;
+  }
 }
