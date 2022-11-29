@@ -14,6 +14,13 @@ class IO {
   
   CREATE_EVENT(read, std::vector<PlanetData>, const std::string&);
   CREATE_EVENT(write, void, std::vector<PlanetData>, const std::string&)
+
+  private:
+    std::string read_web(const std::string& path);
+    std::string read_file(const std::string& path);
+    void write_file(const std::string& path, const std::string data);
+    void get_api(const std::string& path);
+
 };
 
 #endif // __IO_H__
