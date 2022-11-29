@@ -24,7 +24,9 @@ Vec3& Vec3::operator=(const Vec3& rhs) {
 
 Vec3& Vec3::operator=(Vec3&& rhs) {
     *this = rhs;
-    rhs = Vec3(0, 0, 0);
+    rhs.x = 0;
+    rhs.y = 0;
+    rhs.z = 0;
     return *this;
 }
 
