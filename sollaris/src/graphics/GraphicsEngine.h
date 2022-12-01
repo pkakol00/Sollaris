@@ -12,6 +12,7 @@
 
 #include <util/common.h>
 #include <graphics/drawable/Planet.h>
+#include <graphics/drawable/Orbit.h>
 class GraphicsEngine {
   CREATE_EVENT(planet_addition, void, int);
   CREATE_EVENT(planet_removeal, void, int);
@@ -33,6 +34,7 @@ private:
 
   std::shared_ptr<std::vector<PlanetPosition>> planet_positions;
   std::vector<Planet> planets_drawables;
+  std::vector<Orbit> orbit_drawables;
 
   bool pollEvents();
   void init();

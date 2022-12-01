@@ -5,7 +5,7 @@
 #include <string>
 #include "../util/Log.h"
 
-#include <graphics/drawable/Triangle.h>
+#include <graphics/Camera.h>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -21,8 +21,6 @@ GraphicsEngine::GraphicsEngine()
 
   init();
 
-  glClearColor(.66, .66, .55, 1);
-
   shader = ge::Shader("resources/shaders/basic");
 }
 
@@ -31,10 +29,8 @@ bool GraphicsEngine::pollEvents() {
   bool res = true;
   while (window_ptr->pollEvent(event)) {
     if (event.type == sf::Event::Closed) {
-      // end the program
       res = false;
     } else if (event.type == sf::Event::Resized) {
-      // adjust the viewport when the window is resized
       glViewport(0, 0, event.size.width, event.size.height);
     }
   }
@@ -46,11 +42,17 @@ bool GraphicsEngine::display() {
   auto res = pollEvents();
   shader.bind();
 
+  static Camera camera;
+
+  shader.setUniformMat4("projection_view", camera.getProjectionViewMatrix());
+
   for (int i = 0; i < planets_drawables.size(); i ++) {
     auto v = planet_positions->at(i).positions.front();
     planets_drawables[i].position = glm::vec3(v.x, v.y, v.z);
     shader.setUniformMat4("model", planets_drawables[i].getModelMatrix());
     planets_drawables[i].draw();
+    shader.setUniformMat4("model", orbit_drawables[i].getModelMatrix());
+    orbit_drawables[i].draw();
   }
 
   window_ptr->display();
@@ -64,13 +66,16 @@ void GraphicsEngine::init() {
         std::string(reinterpret_cast<const char*>(glewGetErrorString(err))));
   }
   LOG(std::string(reinterpret_cast<const char*>(glGetString(GL_VERSION))));
+  glClearColor(.66, .66, .55, 1);
 }
 
 void GraphicsEngine::setPlanetPositions(std::shared_ptr<std::vector<PlanetPosition>> v) {
   planet_positions = v;
   planets_drawables = std::vector<Planet>(v->size(), Planet(20, .5));
+  orbit_drawables = std::vector<Orbit>(v->size());
 
   for (int i = 0; i < planets_drawables.size(); i ++) {
     planets_drawables[i].scale = glm::vec3(.2);
+    orbit_drawables[i] = Orbit(&v->at(i).positions);
   }
 }

@@ -6,6 +6,8 @@ pkg_check_modules(GTKMM REQUIRED gtkmm-3.0)
 set(GRAPHIC_SOURCES
   src/graphics/GraphicsEngine.cpp
   src/graphics/GraphicsEngine.h
+  src/graphics/Camera.cpp
+  src/graphics/Camera.h
   src/graphics/Shader.cpp
   src/graphics/Shader.h
   src/graphics/drawable/Drawable.h
@@ -14,6 +16,8 @@ set(GRAPHIC_SOURCES
   src/graphics/drawable/Triangle.cpp
   src/graphics/drawable/Planet.cpp
   src/graphics/drawable/Planet.h
+  src/graphics/drawable/Orbit.cpp
+  src/graphics/drawable/Orbit.h
 )
 
 set(IO_SOURCES

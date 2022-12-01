@@ -7,6 +7,7 @@
 #include <sstream>
 #include <vector>
 #include <glm/glm.hpp>
+#include "common.h"
 
 inline void log(const std::string& file, const int line, const std::string& message) {
   std::cout << "[" << file << ":" << line << "] " << message << std::endl;
@@ -20,6 +21,9 @@ inline void log(const std::string& file, const int line, const std::string& mess
 
 namespace std {
   inline string to_string(const ::glm::vec3& v) {
+    return "(" + to_string(v.x) + ", " + to_string(v.y) + ", " + to_string(v.z) + ")";
+  }
+  inline string to_string(const Vec3& v) {
     return "(" + to_string(v.x) + ", " + to_string(v.y) + ", " + to_string(v.z) + ")";
   }
 }
