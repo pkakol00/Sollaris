@@ -30,6 +30,7 @@ void PhysicsEngine::updateVelocities() {
 
   for(int i = 0; i < data->size(); i++) {
     data->at(i).velocity = newVelocites.at(i);
+    LOG("New velocity of object with id: ", data->at(i).planet_id, " is ", data->at(i).velocity);
   }
 }
 
