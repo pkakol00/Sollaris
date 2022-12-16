@@ -43,7 +43,7 @@ void PhysicsEngine::updatePositions() {
 }
 
 PhysicsEngine::PhysicsEngine(std::shared_ptr<std::vector<PlanetPosition>> position, std::shared_ptr<std::vector<PlanetData>> data, double interval)
-  : position(position), data(data), interval(interval), G(6.6743015e-10) {}
+  : position(position), data(data), interval(interval), G(6.6743015e-11) {}
 
 void PhysicsEngine::update() {
   updateVelocities();
