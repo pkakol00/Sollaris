@@ -4,14 +4,20 @@
 #include <iostream>
 #include "stdarg.h"
 
-inline void log(const std::string& file, const int line, const std::string& message) {
-  std::cout << "[" << file << ":" << line << "] " << message << std::endl;
+inline void log() {
+    std::cerr << std::endl;
+}
+
+template <typename T, typename... TAIL>
+inline void log(T head, TAIL... tail) {
+    std::cerr << head;
+    log(tail...);
 }
 
 #ifdef SILENT
-#define LOG(message)
+#define LOG(...)
 #else
-#define LOG(message) log(__FILE__, __LINE__, message)
+#define LOG(...) log("[", __FILE__, ":", __LINE__, "] ", __VA_ARGS__)
 #endif
 
 #endif // __LOG_H__
