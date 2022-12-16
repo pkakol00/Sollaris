@@ -49,6 +49,10 @@ public:
   friend std::ostream& operator<<(std::ostream&, const Vec3&);
 };
 
+namespace std {
+    std::string to_string(const Vec3&);
+}
+
 struct PlanetData {
   double mass;
   double radious;

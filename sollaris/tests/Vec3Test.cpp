@@ -307,3 +307,13 @@ TEST(Vec3Test, DivDouble) {
   EXPECT_NEAR(y / 40, c.y, 0.0001);
   EXPECT_NEAR(z / 40, c.z, 0.0001);
 }
+
+TEST(Vec3Test,toString) {
+  double x = 10, y = 20, z = 30;
+  Vec3 a {x, y, z};
+
+  std::string correct = "(" + std::to_string(x) + "," + std::to_string(y) + "," + std::to_string(z) + ")";
+  std::string tmp = std::to_string(a);
+
+  EXPECT_EQ(correct, tmp);
+}

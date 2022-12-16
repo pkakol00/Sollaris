@@ -138,3 +138,14 @@ std::ostream& operator<<(std::ostream& os, const Vec3& obj)
     os << "(" << obj.x << "," << obj.y << "," << obj.z << ")";
     return os;
 }
+
+namespace std {
+    std::string to_string(const Vec3 &vec) {
+        std::string tmp {"("};
+        tmp += std::to_string(vec.x) + ",";
+        tmp += std::to_string(vec.y) + ",";
+        tmp += std::to_string(vec.z) + ")";
+
+        return tmp;
+    }
+}
