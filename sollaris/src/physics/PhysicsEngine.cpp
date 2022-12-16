@@ -4,7 +4,7 @@ void PhysicsEngine::updateVelocities() {
   LOG("Updating velocity of all objects");
   std::vector<Vec3> newVelocites(data->size());
   for(int i = 0; i < data->size(); i++) {
-    LOG("Updating velocity for object with id: " + std::to_string(data->at(i).planet_id));
+    LOG("Updating velocity for object with id: ", data->at(i).planet_id);
     const Vec3 aPos = position->at(i).positions.back();
     const PlanetData aData = data->at(i);
 
@@ -17,7 +17,7 @@ void PhysicsEngine::updateVelocities() {
           LOG("Skip updating velocity with self");
           continue;
       }
-      LOG("Updating velocity with object with id: " + std::to_string(data->at(j).planet_id));
+      LOG("Updating velocity with object with id: ", data->at(j).planet_id);
 
       Vec3 sqrDist = aPos.squared() + bPos.squared();
       Vec3 forceDir = sqrDist.normalized();
@@ -36,7 +36,7 @@ void PhysicsEngine::updateVelocities() {
 void PhysicsEngine::updatePositions() {
   LOG("Updating positions of all objects");
   for(int i = 0; i < this->data->size(); i++) {
-    LOG("New position for object with id: " + std::to_string(data->at(i).planet_id));
+    LOG("New position for object with id: ", data->at(i).planet_id);
     Vec3 newPosition = position->at(i).positions.back() + data->at(i).velocity * this->interval;
     position->at(i).positions.push(newPosition);
   }
