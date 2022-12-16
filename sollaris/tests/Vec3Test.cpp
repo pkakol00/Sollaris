@@ -73,6 +73,15 @@ TEST(Vec3Test, length) {
   EXPECT_NEAR(res, a.length(), 0.0001);
 }
 
+TEST(Vec3Test, squaredLength) {
+  double x = 10, y = 20, z = 30;
+  Vec3 a {x, y, z};
+
+  double res = x*x + y*y + z*z;
+
+  EXPECT_NEAR(res, a.squaredLength(), 0.0001);
+}
+
 TEST(Vec3Test, normalized) {
   double x = 10, y = 20, z = 30;
   Vec3 a {x, y, z};

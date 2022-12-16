@@ -21,6 +21,7 @@ public:
   double length() const;
   Vec3 normalized() const;
   Vec3 squared() const;
+  double squaredLength() const;
 
   Vec3& operator+=(const Vec3&);
   Vec3& operator-=(const Vec3&);
