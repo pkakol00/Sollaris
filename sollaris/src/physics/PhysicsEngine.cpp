@@ -19,8 +19,8 @@ void PhysicsEngine::updateVelocities() {
       }
       LOG("Updating velocity with object with id: ", data->at(j).planet_id);
 
-      Vec3 sqrDist = aPos.squared() + bPos.squared();
-      Vec3 forceDir = sqrDist.normalized();
+      double sqrDist = (aPos - bPos).squaredLength();
+      Vec3 forceDir = (bPos - aPos).normalized();
       Vec3 force = forceDir * G * aData.mass * bData.mass / sqrDist;
       Vec3 acc = force / aData.mass;
 
