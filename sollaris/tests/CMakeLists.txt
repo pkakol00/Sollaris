@@ -9,8 +9,11 @@ set(TEST_SOURCES
   # Sources for tests
   DummyTest.cpp
   Vec3Test.cpp
+  PhysicsTest.cpp
   ../src/util/common.cpp
   ../src/util/common.h
+  ../src/physics/PhysicsEngine.cpp
+  ../src/physics/PhysicsEngine.h
 )
 
 add_subdirectory(googletest)
