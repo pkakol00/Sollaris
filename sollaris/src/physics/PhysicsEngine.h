@@ -19,7 +19,7 @@ public:
   PhysicsEngine(std::shared_ptr<std::vector<PlanetPosition>>, std::shared_ptr<std::vector<PlanetData>>, double);
   void update();
   CREATE_EVENT(planet_merge, void, std::vector<int>, int);
-  CREATE_EVENT(planet_division, int, std::vector<int>);
+  CREATE_EVENT(planet_division, void, int, std::vector<int>);
 
 };
 

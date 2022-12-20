@@ -44,7 +44,10 @@ void PhysicsEngine::updatePositions() {
 }
 
 PhysicsEngine::PhysicsEngine(std::shared_ptr<std::vector<PlanetPosition>> position, std::shared_ptr<std::vector<PlanetData>> data, double interval)
-  : position(position), data(data), interval(interval), G(6.6743015e-11) {}
+  : position(position), data(data), interval(interval), G(6.6743015e-11) {
+    planet_merge_event_function = [](std::vector<int> _, int __) { LOG("Missing callback for planet merge event"); };
+    planet_division_event_function = [](int _, std::vector<int> __) { LOG("Missing callback for planet division event"); };
+}
 
 void PhysicsEngine::update() {
   updateVelocities();
