@@ -49,7 +49,7 @@ TEST(PhysicsEngineTest, ConstantMomentumSum) {
 
     double org_momentum = calc_momentum(data);
 
-    for(int i = 0; i < 10'000; ++i) {
+    for(int i = 0; i < 1'000; ++i) {
         PE.update();
         double momentum = calc_momentum(data);
         EXPECT_NEAR(momentum / org_momentum, 1.0, 0.001);
@@ -82,7 +82,7 @@ TEST(PhysicsEngineTest, Barycenter) {
     Vec3 org_diff = second_barycenter - first_barycenter;
     Vec3 prev_barycenter = second_barycenter;
 
-    for(int i = 0; i < 10'000; ++i) {
+    for(int i = 0; i < 1'000; ++i) {
         PE.update();
 
         Vec3 barycenter = calc_barycenter(position, data);
