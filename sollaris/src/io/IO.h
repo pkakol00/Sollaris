@@ -16,10 +16,13 @@ class IO {
   CREATE_EVENT(write, void, std::vector<PlanetData>, const std::string&)
 
   private:
+    std::vector<PlanetData> parse_web(const std::string& data);
+    std::vector<PlanetData> parse_file(const std::string& data);
+    std::string serialize_file(const std::vector<PlanetData>& data);
+
     std::string read_web(const std::string& path);
     std::string read_file(const std::string& path);
-    void write_file(const std::string& path, const std::string data);
-    void get_api(const std::string& path);
+    void write_file(const std::string& path, const std::string& data);
 
 };
 
