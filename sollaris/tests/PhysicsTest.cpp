@@ -95,3 +95,82 @@ TEST(PhysicsEngineTest, Barycenter) {
         prev_barycenter = barycenter;
     }
 }
+
+TEST(PhysicsEngineTest, ShouldNotCollide) {
+    std::shared_ptr<std::vector<PlanetPosition>> position;
+    std::shared_ptr<std::vector<PlanetData>> data;
+    const double interval = 1;
+    auto PE = prepare_system(position, data, interval);
+
+    bool detected = false;
+    std::vector<int> old_planets;
+    int new_planet = -1;
+
+    auto callback = [&detected, &old_planets, &new_planet](std::vector<int> old_ids, int new_id) {
+        detected = true;
+        old_planets = old_ids;
+        new_planet = new_id;
+    };
+
+    PE.subscribe_to_planet_merge(callback);
+
+    for(int i = 0; i < 100; ++i) {
+        PE.update();
+        EXPECT_EQ(detected, false);
+        EXPECT_EQ(new_planet, -1);
+        EXPECT_EQ(old_planets.size(), 0);
+    }
+}
+
+TEST(PhysicsEngineTest, ShouldCollide) {
+    PlanetPosition ap; ap.planet_id = 0; ap.positions.push({+500, 0, 0});
+    PlanetPosition bp; bp.planet_id = 1; bp.positions.push({-1'000, -1'000, 0});
+    auto position = std::make_shared<std::vector<PlanetPosition>>(std::initializer_list<PlanetPosition>{ap, bp});
+    int next_id = bp.planet_id + 1;
+
+    PlanetData ad {1e1, 5, {-5.0, 0.0, 0.0}, {0.1, 0.2, 0.9}, 0};
+    PlanetData bd {1e1, 5, {10.0, 10.0, 0.0}, {0.9, 0.2, 0.3}, 1};
+    auto data = std::make_shared<std::vector<PlanetData>>(std::initializer_list<PlanetData>{ad, bd});
+
+    const double interval = 1;
+    auto PE = PhysicsEngine(position, data, interval);
+
+    bool detected = false;
+    std::vector<int> old_planets;
+    int new_planet = -1;
+
+    auto callback = [&detected, &old_planets, &new_planet](std::vector<int> old_ids, int new_id) {
+        detected = true;
+        old_planets = old_ids;
+        new_planet = new_id;
+    };
+
+    PE.subscribe_to_planet_merge(callback);
+
+    // There should be no collision for 99 iterations
+    for(int i = 0; i < 99; ++i) {
+        PE.update();
+        EXPECT_EQ(detected, false);
+        EXPECT_EQ(new_planet, -1);
+        EXPECT_EQ(old_planets.size(), 0);
+    }
+
+    // In 100th iteration two planets should collide and procude new planet
+    PE.update();
+    EXPECT_EQ(detected, true);
+    EXPECT_EQ(new_planet, next_id);
+    EXPECT_EQ(old_planets.size(), 2);
+
+    // We acknowledged collision
+    detected = false;
+    new_planet = -1;
+    old_planets.clear();
+
+    // There should be no further collisions
+    for(int i = 0; i < 1'000; ++i) {
+        PE.update();
+        EXPECT_EQ(detected, false);
+        EXPECT_EQ(new_planet, -1);
+        EXPECT_EQ(old_planets.size(), 0);
+    }
+}
