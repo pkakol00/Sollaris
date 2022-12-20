@@ -28,12 +28,15 @@ set(IO_SOURCES
 set(PHYSICS_SOURCES
   src/physics/PhysicsEngine.cpp
   src/physics/PhysicsEngine.h
+
 )
 
 set(UTILS_SOURCES
   src/util/common.cpp
   src/util/common.h
-)
+  src/util/serializable.cpp
+  src/util/serializable.capnp
+  )
 
 set(SOURCES
   src/main.cpp
@@ -46,10 +49,14 @@ set(SOURCES
 find_package(SFML 2 COMPONENTS graphics window audio 
   REQUIRED HINTS "${CMAKE_CURRENT_SOURCE_DIR}/../lib_gcc/cmake/SFML")
 
+
 set(OpenGL_GL_PREFERENCE GLVND)
 find_package(OpenGL REQUIRED)
 find_package(GLUT REQUIRED)
 find_package(GLEW REQUIRED)
+
+find_package(CapnProto REQUIRED HINTS "${CMAKE_CURRENT_SOURCE_DIR}/../lib_gcc/cmake/capnp")
+
 
 add_executable(${PROJECT_NAME} ${SOURCES})
 
@@ -59,13 +66,16 @@ target_link_libraries(${PROJECT_NAME}
   ${GTKMM_LIBRARIES}
   ${OPENGL_LIBRARIES}
   ${GLEW_LIBRARIES}
+  ${CAPNP_LIBRARIES}
   -lGLEW
-  sfml-graphics sfml-window sfml-audio)
+  sfml-graphics sfml-window sfml-audio
+)
 
 target_include_directories(${PROJECT_NAME} PUBLIC 
   ${GTKMM_INCLUDE_DIRS}
   ${OPENGL_INCLUDE_DIRS}
   ${GLEW_INCLUDE_DIRS}
+  ${CAPNP_INCLUDE_DIRS}
   "${CMAKE_CURRENT_SOURCE_DIR}/../include/"
   "${CMAKE_CURRENT_SOURCE_DIR}/src/"
 )

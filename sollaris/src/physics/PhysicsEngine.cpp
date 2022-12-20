@@ -32,7 +32,7 @@ void PhysicsEngine::updatePositions() {
   for(int i = 0; i < this->data->size(); i++) {
     LOG("New position for object with id: " + std::to_string(data->at(i).planet_id));
     Vec3 newPosition = position->at(i).positions.back() + data->at(i).velocity * this->interval;
-    position->at(i).positions.push(newPosition);
+    position->at(i).positions.push_back(newPosition);
   }
 }
 
