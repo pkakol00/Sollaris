@@ -12,17 +12,24 @@ class IO {
   information weather to read from file or webserver can be obtained from 
   scheme; IE file:// vs https://. */
   
-  CREATE_EVENT(read, std::vector<PlanetData>, const std::string&);
-  CREATE_EVENT(write, void, std::vector<PlanetData>, const std::string&)
+  // CREATE_EVENT(read, std::vector<PlanetData>, const std::string&);
+  // CREATE_EVENT(write, void, std::vector<PlanetData>, const std::string&)
+  public:
+    void write_event(const std::vector<PlanetData>& data, const std::string& filename);
+    std::vector<PlanetData> read_event(const std::string& filename);
+
+    std::vector<PlanetData> get_web(const std::string& path);
+    PlanetData parse_web(const std::string& data);
 
   private:
-    std::vector<PlanetData> parse_web(const std::string& data);
+  
+    
     std::vector<PlanetData> parse_file(const std::string& data);
     std::string serialize_file(const std::vector<PlanetData>& data);
 
     std::string read_web(const std::string& path);
     std::string read_file(const std::string& path);
-    void write_file(const std::string& path, const std::string& data);
+    bool write_file(const std::string& path, const std::string& data);
 
 };
 
