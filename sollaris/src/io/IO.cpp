@@ -53,10 +53,19 @@ using json = nlohmann::json;
     return planet;
   }
 
+
+
+
+
+
+
+  static size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *userp)
+  {
+      ((std::string*)userp)->append((char*)contents, size * nmemb);
+      return size * nmemb;
+  }
+
   std::vector<PlanetData> IO::get_web(const std::string& path){
-
-    std::cerr<<"web"<<std::endl;
-
     std::string req;
     std::string data;
 
@@ -75,16 +84,34 @@ using json = nlohmann::json;
       "Sun"
     };
 
+    CURL *curl;
+    CURLcode res;
 
+    curl = curl_easy_init();
 
-      //"https://ssd.jpl.nasa.gov/api/horizons.api?EPHEM_TYPE=VECTORS&COMMAND='0'&STEP_SIZE='1d'&START_TIME='2023-01-25 00:00'&STOP_TIME='2023-01-25 12:00'&VEC_TABLE=2&CENTER='@0'"
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &data);
+
+    //"https://ssd.jpl.nasa.gov/api/horizons.api?EPHEM_TYPE=VECTORS&COMMAND='0'&STEP_SIZE='1d'&START_TIME='2023-01-25 00:00'&STOP_TIME='2023-01-25 12:00'&VEC_TABLE=2&CENTER='@0'"
+    //+https://ssd.jpl.nasa.gov/api/horizons.api?COMMAND=%270%27&format=text&EPHEM_TYPE=VECTORS&STEP_SIZE=%271d%27&START_TIME=%272023-01-25%2000:00%27&STOP_TIME=%272023-01-25%2012:00%27&VEC_TABLE=2&CENTER=%27@0%27
     for(int i=0;i<solar_size;i++){
-      req="https://ssd.jpl.nasa.gov/api/horizons.api?COMMAND='";
-      req+=i;
-      req+="'&format=text&EPHEM_TYPE=VECTORS&STEP_SIZE='1d'&START_TIME='2023-01-25 00:00'&STOP_TIME='2023-01-25 12:00'&VEC_TABLE=2&CENTER='@0'";
+      req="https://ssd.jpl.nasa.gov/api/horizons.api?COMMAND=%27";
+      req+=std::to_string(i);
+      req+="%27&format=text&EPHEM_TYPE=VECTORS&STEP_SIZE=%271d%27&START_TIME=%272023-01-25%2000:00%27&STOP_TIME=%272023-01-25%2012:00%27&VEC_TABLE=2&CENTER=%27@0%27";
+      std::cerr<<req<<std::endl;
+      curl_easy_setopt(curl, CURLOPT_URL, req.c_str());
+      res = curl_easy_perform(curl);
+      std::cerr<<res<<std::endl;
+      if(res != CURLE_OK){
+        fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
+      }
+      
       planets.push_back(parse_web(data));
 
+      req.clear();
     }
+
+    curl_easy_cleanup(curl);
 
     return planets;
   }

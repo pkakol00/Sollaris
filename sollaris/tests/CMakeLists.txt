@@ -21,6 +21,7 @@ add_subdirectory(googletest)
 add_executable(${TEST_NAME} ${TEST_SOURCES})
 
 target_link_libraries(${TEST_NAME} PUBLIC GTest::gtest_main)
+target_link_libraries(${TEST_NAME} PUBLIC CURL::libcurl)
 include(GoogleTest)
 
 gtest_discover_tests(${TEST_NAME})
