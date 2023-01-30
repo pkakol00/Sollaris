@@ -8,10 +8,13 @@ set(TEST_NAME my_tests)
 set(TEST_SOURCES
   # Sources for tests
   DummyTest.cpp
-  #Vec3Test.cpp
-  IOTest.cpp
+  Vec3Test.cpp
+  PhysicsTest.cpp
   ../src/util/common.cpp
   ../src/util/common.h
+  ../src/physics/PhysicsEngine.cpp
+  ../src/physics/PhysicsEngine.h
+  IOTest.cpp
   ../src/io/IO.cpp
   ../src/io/IO.h
 )

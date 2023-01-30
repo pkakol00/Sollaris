@@ -6,6 +6,7 @@
 #include <vector>
 #include <memory>
 #include <cmath>
+#include <set>
 
 class PhysicsEngine {
   std::shared_ptr<std::vector<PlanetPosition>> position;
@@ -15,11 +16,15 @@ class PhysicsEngine {
 
   void updateVelocities();
   void updatePositions();
+  std::vector<std::set<int>> findCollisions();
+  void resolveCollisions(const std::vector<std::set<int>>&);
+  std::set<int> mergePlanets(const std::set<int>&);
+  void removePlanets(const std::set<int>&);
 public:
   PhysicsEngine(std::shared_ptr<std::vector<PlanetPosition>>, std::shared_ptr<std::vector<PlanetData>>, double);
   void update();
   CREATE_EVENT(planet_merge, void, std::vector<int>, int);
-  CREATE_EVENT(planet_division, int, std::vector<int>);
+  CREATE_EVENT(planet_division, void, int, std::vector<int>);
 
 };
 

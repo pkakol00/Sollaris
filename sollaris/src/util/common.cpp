@@ -1,5 +1,4 @@
 #include "common.h"
-#include <cmath>
 
 Vec3::Vec3() : x(0), y(0), z(0) {}
 
@@ -24,13 +23,14 @@ Vec3& Vec3::operator=(const Vec3& rhs) {
 
 Vec3& Vec3::operator=(Vec3&& rhs) {
     *this = rhs;
-    rhs = Vec3(0, 0, 0);
+    rhs.x = 0;
+    rhs.y = 0;
+    rhs.z = 0;
     return *this;
 }
 
 double Vec3::length() const {
-    Vec3 tmp = this->squared();
-    return std::sqrt(tmp.x + tmp.y + tmp.z);
+    return std::sqrt(this->squaredLength());
 }
 
 Vec3 Vec3::normalized() const {
@@ -39,6 +39,11 @@ Vec3 Vec3::normalized() const {
 
 Vec3 Vec3::squared() const {
     return (*this) * (*this);
+}
+
+double Vec3::squaredLength() const {
+    Vec3 tmp = this->squared();
+    return tmp.x + tmp.y + tmp.z;
 }
 
 Vec3& Vec3::operator+=(const Vec3& rhs) {
@@ -126,4 +131,21 @@ Vec3 operator*(Vec3 lhs, const double& rhs) {
 }
 Vec3 operator/(Vec3 lhs, const double& rhs) {
     return lhs /= rhs;
+}
+
+std::ostream& operator<<(std::ostream& os, const Vec3& obj)
+{
+    os << "(" << obj.x << "," << obj.y << "," << obj.z << ")";
+    return os;
+}
+
+namespace std {
+    std::string to_string(const Vec3 &vec) {
+        std::string tmp {"("};
+        tmp += std::to_string(vec.x) + ",";
+        tmp += std::to_string(vec.y) + ",";
+        tmp += std::to_string(vec.z) + ")";
+
+        return tmp;
+    }
 }

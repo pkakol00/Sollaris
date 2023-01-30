@@ -3,6 +3,8 @@
 
 #include <deque>
 #include <string>
+#include <cmath>
+#include <ostream>
 
 class Serializable{
 public:
@@ -27,6 +29,7 @@ public:
   double length() const;
   Vec3 normalized() const;
   Vec3 squared() const;
+  double squaredLength() const;
 
   Vec3& operator+=(const Vec3&);
   Vec3& operator-=(const Vec3&);
@@ -50,13 +53,20 @@ public:
   friend Vec3 operator-(Vec3, const double&);
   friend Vec3 operator*(Vec3, const double&);
   friend Vec3 operator/(Vec3, const double&);
+
+  friend std::ostream& operator<<(std::ostream&, const Vec3&);
 };
 
-class PlanetData : public Serializable{
-public:
-  double mass, radious;
+namespace std {
+    std::string to_string(const Vec3&);
+}
+
+struct PlanetData : public Serializable{
+  double mass;
+  double radious;
+  Vec3 velocity;
+  Vec3 colour;
   int planet_id;
-  Vec3 velocity, colour;
   PlanetData* deserialize(const std::string& data);
   std::string& serialize();
   PlanetData();
