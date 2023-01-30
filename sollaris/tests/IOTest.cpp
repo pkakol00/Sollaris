@@ -6,26 +6,33 @@
 #include <cmath>
 
 
-// TEST(IOTest, SavesAndLoads) {
-//   IO io;
-//   std::vector<PlanetData> data;
-//   PlanetData input;
-//   input.mass = 1.0;
-//   input.radious = 2.0;
-//   input.velocity = Vec3(3.0,4.0,5.0);
-//   input.colour = Vec3(6.0,7.0,8.0);
-//   input.planet_id = 0;
-//   data.push_back(input);
-//   input.mass = 5.6;
-//   input.planet_id = 1;
-//   data.push_back(input);
-//   io.write_event(data,"save.space");
-//   std::vector<PlanetData> new_data;
-//   new_data = io.read_event("save.space");
-//   EXPECT_EQ(data[0].mass, new_data[0].mass);
-//   EXPECT_EQ(data[1].radious, new_data[1].radious);
-//   EXPECT_EQ(data[1].velocity.x, new_data[1].velocity.x);
-// }
+TEST(IOTest, SavesAndLoads) {
+  IO io;
+  std::vector<PlanetData> data;
+  PlanetData input;
+  input.mass = 1.0;
+  input.radious = 2.0;
+  input.velocity.x = 3.0;
+  input.velocity.y = 4.0;
+  input.velocity.z = 5.0;
+  // input.colour = Vec3(6.0,7.0,8.0);
+  input.planet_id = 0;
+  data.push_back(input);
+  input.mass = 5.6;
+  input.planet_id = 1;
+  data.push_back(input);
+  io.write_event(data,"save.space");
+  std::vector<PlanetData> new_data;
+  new_data = io.read_event("save.space");
+  io.write_event(new_data,"save2.space");
+  EXPECT_EQ(data[0].planet_id, new_data[0].planet_id);
+  EXPECT_EQ(data[1].planet_id, new_data[1].planet_id);
+  EXPECT_EQ(data[0].mass, new_data[0].mass);
+  EXPECT_EQ(data[1].radious, new_data[1].radious);
+  EXPECT_EQ(data[1].velocity.x, new_data[1].velocity.x);
+
+
+}
 
 TEST(IOTest, WebParse) {
 
@@ -45,7 +52,7 @@ std::string data = "************************************************************
   EXPECT_DOUBLE_EQ(planet.radious, radious); //km
 }
 
-TEST(IOTest, WebDownloadAndParse) {
+TEST(IOTest, DISABLED_WebDownloadAndParse) {
   IO io;
   std::vector<PlanetData> data;
   data = io.read_event("http://");

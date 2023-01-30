@@ -8,8 +8,8 @@
 
 class Serializable{
 public:
-  virtual Serializable* deserialize(const std::string& data) = 0;
-  virtual std::string& serialize() = 0;
+  virtual Serializable deserialize(const std::string& data) = 0;
+  virtual std::string serialize() = 0;
   virtual ~Serializable() = default;
 };
 
@@ -61,24 +61,24 @@ namespace std {
     std::string to_string(const Vec3&);
 }
 
-struct PlanetData : public Serializable{
+struct PlanetData {
   double mass;
   double radious;
   Vec3 velocity;
   Vec3 colour;
   int planet_id;
-  PlanetData* deserialize(const std::string& data);
-  std::string& serialize();
+  PlanetData deserialize(const std::string& data);
+  std::string serialize();
   PlanetData();
   PlanetData(double, double, Vec3, Vec3, int);
   ~PlanetData();
 };
 
-struct PlanetPosition{
+struct PlanetPosition {
   std::deque<Vec3> positions;
   int planet_id;
-  PlanetPosition* deserialize(const std::string& data);
-  std::string& serialize();
+  PlanetPosition deserialize(const std::string& data);
+  std::string serialize();
   PlanetPosition();
   PlanetPosition(std::deque<Vec3> positions, int planet_id);
   ~PlanetPosition();
