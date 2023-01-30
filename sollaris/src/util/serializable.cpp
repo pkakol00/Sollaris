@@ -9,10 +9,13 @@
 //g++ -o serializable serializable.cpp serializable.capnp.c++ `pkg-config --cflags --libs capnp`
 //./serializable
 
+PlanetPosition::PlanetPosition() {};
 
 PlanetPosition::~PlanetPosition() {};
 
 PlanetPosition::PlanetPosition(std::deque<Vec3> positions, int planet_id) : positions(positions), planet_id(planet_id) {}
+
+PlanetData::PlanetData() {};
 
 PlanetData::~PlanetData() {};
 

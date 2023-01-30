@@ -79,6 +79,7 @@ struct PlanetPosition{
   int planet_id;
   PlanetPosition* deserialize(const std::string& data);
   std::string& serialize();
+  PlanetPosition();
   PlanetPosition(std::deque<Vec3> positions, int planet_id);
   ~PlanetPosition();
 };
