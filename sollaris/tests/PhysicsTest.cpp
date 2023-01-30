@@ -4,15 +4,15 @@
 
 PhysicsEngine prepare_system(std::shared_ptr<std::vector<PlanetPosition>> &position, std::shared_ptr<std::vector<PlanetData>> &data, int interval) {
                                 // id      Position (m)  x,   y,            z
-    PlanetPosition ap; ap.planet_id = 0; ap.positions.push({0.0,                0.0, 0.0}); // Sun
-    PlanetPosition bp; bp.planet_id = 1; bp.positions.push({0.0,    +57'909'036'552, 0.0}); // Mercury
-    PlanetPosition cp; cp.planet_id = 2; cp.positions.push({0.0,   -108'207'927'552, 0.0}); // Venus
-    PlanetPosition dp; dp.planet_id = 3; dp.positions.push({0.0,   +149'598'023'000, 0.0}); // Earth
-    PlanetPosition ep; ep.planet_id = 4; ep.positions.push({0.0,   -227'939'366'000, 0.0}); // Mars
-    PlanetPosition fp; fp.planet_id = 5; fp.positions.push({0.0,   +778'479'399'549, 0.0}); // Jupiter
-    PlanetPosition gp; gp.planet_id = 6; gp.positions.push({0.0, -1'433'536'555'770, 0.0}); // Saturn
-    PlanetPosition hp; hp.planet_id = 7; hp.positions.push({0.0, +2'870'971'632'050, 0.0}); // Uranus
-    PlanetPosition ip; ip.planet_id = 8; ip.positions.push({0.0, -4'498'407'971'949, 0.0}); // Neptune
+    PlanetPosition ap; ap.planet_id = 0; ap.positions.push_back({0.0,                0.0, 0.0}); // Sun
+    PlanetPosition bp; bp.planet_id = 1; bp.positions.push_back({0.0,    +57'909'036'552, 0.0}); // Mercury
+    PlanetPosition cp; cp.planet_id = 2; cp.positions.push_back({0.0,   -108'207'927'552, 0.0}); // Venus
+    PlanetPosition dp; dp.planet_id = 3; dp.positions.push_back({0.0,   +149'598'023'000, 0.0}); // Earth
+    PlanetPosition ep; ep.planet_id = 4; ep.positions.push_back({0.0,   -227'939'366'000, 0.0}); // Mars
+    PlanetPosition fp; fp.planet_id = 5; fp.positions.push_back({0.0,   +778'479'399'549, 0.0}); // Jupiter
+    PlanetPosition gp; gp.planet_id = 6; gp.positions.push_back({0.0, -1'433'536'555'770, 0.0}); // Saturn
+    PlanetPosition hp; hp.planet_id = 7; hp.positions.push_back({0.0, +2'870'971'632'050, 0.0}); // Uranus
+    PlanetPosition ip; ip.planet_id = 8; ip.positions.push_back({0.0, -4'498'407'971'949, 0.0}); // Neptune
 
                 // Mass (kg)  Radious (m)   Velocity (m/s)       Color      id
     PlanetData ad {1.98910e30, 6.95508e8, {    0.0, 0.0, 0.0}, {0.1, 0.5, 0.2}, 0}; // Sun
@@ -123,8 +123,8 @@ TEST(PhysicsEngineTest, ShouldNotCollide) {
 }
 
 TEST(PhysicsEngineTest, ShouldCollide) {
-    PlanetPosition ap; ap.planet_id = 0; ap.positions.push({+500, 0, 0});
-    PlanetPosition bp; bp.planet_id = 1; bp.positions.push({-1'000, -1'000, 0});
+    PlanetPosition ap; ap.planet_id = 0; ap.positions.push_back({+500, 0, 0});
+    PlanetPosition bp; bp.planet_id = 1; bp.positions.push_back({-1'000, -1'000, 0});
     auto position = std::make_shared<std::vector<PlanetPosition>>(std::initializer_list<PlanetPosition>{ap, bp});
     int next_id = bp.planet_id + 1;
 

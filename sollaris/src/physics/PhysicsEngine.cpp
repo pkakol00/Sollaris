@@ -144,7 +144,7 @@ std::set<int> PhysicsEngine::mergePlanets(const std::set<int>& planets) {
   new_object_data.radious = std::cbrt(new_object_data.radious);
   new_object_data.velocity = new_object_data.velocity / mass_sum;
 
-  new_object_pos.positions.push(pos / mass_sum);
+  new_object_pos.positions.push_back(pos / mass_sum);
 
   LOG("Merged object: id       - ", new_object_data.planet_id);
   LOG("Merged object: mass     - ", new_object_data.mass);
