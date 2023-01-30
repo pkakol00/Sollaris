@@ -1,7 +1,7 @@
 #ifndef __MATH_UTIL_H__
 #define __MATH_UTIL_H__
 
-#include <queue>
+#include <deque>
 
 class Vec3 {
 public:
@@ -53,7 +53,7 @@ struct PlanetData {
 };
 
 struct PlanetPosition{
-  std::queue<Vec3> positions;
+  std::deque<Vec3> positions;
   int planet_id;
 };
 
