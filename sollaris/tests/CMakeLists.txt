@@ -14,9 +14,16 @@ set(TEST_SOURCES
   ../src/util/common.h
   ../src/physics/PhysicsEngine.cpp
   ../src/physics/PhysicsEngine.h
+  ../src/util/serializable.cpp
+  ../src/util/serializable.capnp
   IOTest.cpp
   ../src/io/IO.cpp
   ../src/io/IO.h
+)
+
+find_package(
+    CapnProto REQUIRED HINTS
+    "${CMAKE_CURRENT_SOURCE_DIR}/../lib_gcc/cmake/capnp"
 )
 
 add_subdirectory(googletest)
@@ -24,7 +31,16 @@ add_subdirectory(googletest)
 add_executable(${TEST_NAME} ${TEST_SOURCES})
 
 target_link_libraries(${TEST_NAME} PUBLIC GTest::gtest_main)
-target_link_libraries(${TEST_NAME} PUBLIC CURL::libcurl)
+target_link_libraries(
+    ${TEST_NAME} PUBLIC CURL::libcurl
+    ${CAPNP_LIBRARIES}
+)
+
+target_include_directories(
+    ${TEST_NAME} PUBLIC CURL::libcurl
+    ${CAPNP_LIBRARIES_DIRS}
+)
+
 include(GoogleTest)
 
 gtest_discover_tests(${TEST_NAME})
