@@ -2,6 +2,14 @@
 #define __MATH_UTIL_H__
 
 #include <deque>
+#include <string>
+
+class Serializable{
+public:
+  virtual Serializable* deserialize(const std::string& data) = 0;
+  virtual std::string& serialize() = 0;
+  virtual ~Serializable() = default;
+};
 
 class Vec3 {
 public:
@@ -44,17 +52,25 @@ public:
   friend Vec3 operator/(Vec3, const double&);
 };
 
-struct PlanetData {
-  double mass;
-  double radious;
-  Vec3 velocity;
-  Vec3 colour;
+class PlanetData : public Serializable{
+public:
+  double mass, radious;
   int planet_id;
+  Vec3 velocity, colour;
+  PlanetData* deserialize(const std::string& data);
+  std::string& serialize();
+  PlanetData();
+  PlanetData(double, double, Vec3, Vec3, int);
+  ~PlanetData();
 };
 
 struct PlanetPosition{
   std::deque<Vec3> positions;
   int planet_id;
+  PlanetPosition* deserialize(const std::string& data);
+  std::string& serialize();
+  PlanetPosition(std::deque<Vec3> positions, int planet_id);
+  ~PlanetPosition();
 };
 
 #endif // __MATH_UTIL_H__

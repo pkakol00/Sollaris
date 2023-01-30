@@ -1,19 +1,186 @@
-#ifndef __IO_H__
-#define __IO_H__
-
 #include "../util/events.h"
 #include "../util/common.h"
+#include "IO.h"
+#include "json.hpp"
+#include <cstdio>
+#include <fstream>
+#include <string>
+#include <type_traits>
 #include <vector>
+#include <curl/curl.h>
 
-class IO {
-  /*I think IO modules event will need const std::srting& path argument to 
-  know what to read.
-  Additionally I don't think wee need 2 different functions for this, since 
-  information weather to read from file or webserver can be obtained from 
-  scheme; IE file:// vs https://. */
-  
-  CREATE_EVENT(read, std::vector<PlanetData>, const std::string&);
-  CREATE_EVENT(write, void, std::vector<PlanetData>, const std::string&)
-};
+using json = nlohmann::json;
 
-#endif // __IO_H__
+  void IO::write_event(const std::vector<PlanetData>& data, const std::string& filename){
+    std::string str = serialize_file(data);
+    write_file(str,filename);
+  }
+
+  std::vector<PlanetData> IO::read_event(const std::string& filename){
+    std::string data;
+    if(filename.compare(0,4,"http")==0){
+      return get_web(filename);
+      // data = read_web(filename);
+      // return parse_web(data);
+    }else{
+      data = read_file(filename);
+      return parse_file(data);
+    }
+  }
+
+  PlanetData IO::parse_web(const std::string& data){
+    int pos=0;
+    Vec3 position;
+    PlanetData planet;
+    pos = data.find("Mean Radius (km) =",pos) + 18;
+    planet.radious = atof(data.c_str()+pos);
+    pos = data.find("Mass x10^",pos) + 9;
+    int multi = atoi(data.c_str()+pos);
+    pos = data.find("=",pos) + 1;
+    planet.mass = atof(data.c_str()+pos) * pow(10,multi);
+    pos = data.find("X =",pos) + 3;
+    position.x = atof(data.c_str()+pos);
+    pos = data.find("Y =",pos) + 3;
+    position.y = atof(data.c_str()+pos);
+    pos = data.find("Z =",pos) + 3;
+    position.z = atof(data.c_str()+pos);
+    pos = data.find("VX=",pos) + 3;
+    planet.velocity.x = atof(data.c_str()+pos);
+    pos = data.find("VY=",pos) + 3;
+    planet.velocity.y = atof(data.c_str()+pos);
+    pos = data.find("VZ=",pos) + 3;
+    planet.velocity.z = atof(data.c_str()+pos);
+    return planet;
+  }
+
+
+
+
+
+
+
+  static size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *userp)
+  {
+      ((std::string*)userp)->append((char*)contents, size * nmemb);
+      return size * nmemb;
+  }
+
+  std::vector<PlanetData> IO::get_web(const std::string& path){
+    std::string req;
+    std::string data;
+
+    const int solar_size = 10;
+    std::vector<PlanetData> planets(solar_size);
+    std::array<std::string,solar_size> solar_names={
+      "Mercury",
+      "Venus",
+      "Earth",
+      "Mars",
+      "Saturn",
+      "Jowisz",
+      "Uran",
+      "Neptun",
+      "Pluto",
+      "Sun"
+    };
+
+    CURL *curl;
+    CURLcode res;
+
+    curl = curl_easy_init();
+
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &data);
+
+    //"https://ssd.jpl.nasa.gov/api/horizons.api?EPHEM_TYPE=VECTORS&COMMAND='0'&STEP_SIZE='1d'&START_TIME='2023-01-25 00:00'&STOP_TIME='2023-01-25 12:00'&VEC_TABLE=2&CENTER='@0'"
+    //+https://ssd.jpl.nasa.gov/api/horizons.api?COMMAND=%270%27&format=text&EPHEM_TYPE=VECTORS&STEP_SIZE=%271d%27&START_TIME=%272023-01-25%2000:00%27&STOP_TIME=%272023-01-25%2012:00%27&VEC_TABLE=2&CENTER=%27@0%27
+    for(int i=0;i<solar_size;i++){
+      req="https://ssd.jpl.nasa.gov/api/horizons.api?COMMAND=%27";
+      req+=std::to_string(i);
+      req+="%27&format=text&EPHEM_TYPE=VECTORS&STEP_SIZE=%271d%27&START_TIME=%272023-01-25%2000:00%27&STOP_TIME=%272023-01-25%2012:00%27&VEC_TABLE=2&CENTER=%27@0%27";
+      std::cerr<<req<<std::endl;
+      curl_easy_setopt(curl, CURLOPT_URL, req.c_str());
+      res = curl_easy_perform(curl);
+      std::cerr<<res<<std::endl;
+      if(res != CURLE_OK){
+        fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
+      }
+      
+      planets.push_back(parse_web(data));
+
+      req.clear();
+    }
+
+    curl_easy_cleanup(curl);
+
+    return planets;
+  }
+
+  std::vector<PlanetData> IO::parse_file(const std::string& data){
+    json load = json::parse(data);
+    std::vector<PlanetData> ret;
+    ret.resize(load.size());
+
+
+    for(int i=0;i<load.size();i++){
+      ret[i].mass = load[i]["mass"];
+      ret[i].radious = load[i]["radious"] ;
+      ret[i].velocity.x = load[i]["velocity"][0];
+      ret[i].velocity.y = load[i]["velocity"][1];
+      ret[i].velocity.z = load[i]["velocity"][2];
+      ret[i].velocity.x = load[i]["colour"][0];
+      ret[i].velocity.y = load[i]["colour"][1];
+      ret[i].velocity.z = load[i]["colour"][2];
+      ret[i].planet_id = load[i]["planet_id"] ;
+    }
+
+    return ret;
+
+  }
+
+  std::string IO::serialize_file(const std::vector<PlanetData>& data){
+    json save;
+    for(int i=0;i<data.size();i++){
+      save[i]["mass"] = data[i].mass;
+      save[i]["radious"] = data[i].radious;
+      save[i]["velocity"] = {data[i].velocity.x,data[i].velocity.y,data[i].velocity.z};
+      save[i]["colour"] = {data[i].colour.x,data[i].colour.y,data[i].colour.z};
+      save[i]["planet_id"] = data[i].planet_id;
+    }
+    return save.dump();
+  }
+
+ 
+
+  std::string IO::read_web(const std::string& path){
+    return "";
+  }
+
+  std::string IO::read_file(const std::string& path){
+    std::ifstream file(path);
+    if(!file.is_open()){
+      return "";
+    }
+
+    std::string ret;
+
+    file.seekg(0, std::ios::end);
+    size_t length = file.tellg();
+
+    ret.resize(length);
+    file.seekg(0, std::ios::beg);
+    file.read(&ret[0],length);
+
+    file.close();
+    return ret;
+  }
+
+  bool IO::write_file(const std::string& data, const std::string& path){
+    std::ofstream file(path);
+    if(!file.is_open()){
+      return false;
+    }
+    file << data;
+    file.close();
+    return true;
+  }
