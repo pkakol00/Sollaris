@@ -8,6 +8,8 @@ pkg_check_modules(CURL REQUIRED libcurl )
 set(GRAPHIC_SOURCES
   src/graphics/GraphicsEngine.cpp
   src/graphics/GraphicsEngine.h
+  src/UI/UI.cpp
+  src/UI/UI.h
 )
 
 set(IO_SOURCES
