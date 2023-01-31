@@ -23,10 +23,6 @@ set(TEST_SOURCES
   ../src/io/IO.h
 )
 
-find_package(
-    CapnProto REQUIRED HINTS
-    "${CMAKE_CURRENT_SOURCE_DIR}/../lib_gcc/cmake/capnp"
-)
 
 add_subdirectory(googletest)
 
