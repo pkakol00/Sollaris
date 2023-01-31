@@ -52,24 +52,25 @@ using json = nlohmann::json;
     Vec3 position;
     pos = data.find("Mean Radius (km)",0) + 16;
     pos = data.find("=",pos) + 1;
-    planet.radious = atof(data.c_str()+pos);
+    planet.radious = atof(data.c_str()+pos)*1000;
     pos = data.find("Mass x10^",0) + 9;
     int multi = atoi(data.c_str()+pos);
     pos = data.find("=",pos) + 1;
     planet.mass = atof(data.c_str()+pos) * pow(10,multi);
     pos = data.find("X =",pos) + 3;
-    position.x = atof(data.c_str()+pos);
+    position.x = atof(data.c_str()+pos)*1000;
     pos = data.find("Y =",pos) + 3;
-    position.y = atof(data.c_str()+pos);
+    position.y = atof(data.c_str()+pos)*1000;
     pos = data.find("Z =",pos) + 3;
-    position.z = atof(data.c_str()+pos);
+    position.z = atof(data.c_str()+pos)*1000;
     pos = data.find("VX=",pos) + 3;
-    planet.velocity.x = atof(data.c_str()+pos);
+    planet.velocity.x = atof(data.c_str()+pos)*1000;
     pos = data.find("VY=",pos) + 3;
-    planet.velocity.y = atof(data.c_str()+pos);
+    planet.velocity.y = atof(data.c_str()+pos)*1000;
     pos = data.find("VZ=",pos) + 3;
-    planet.velocity.z = atof(data.c_str()+pos);
+    planet.velocity.z = atof(data.c_str()+pos)*1000;
     pposition.positions.push_back(position);
+    // std::cout << "in io: " << position.x << std::endl;
   }
 
 
@@ -144,17 +145,31 @@ using json = nlohmann::json;
 
       parse_web(planet,position,data);
 
-      planet.planet_id = i;
+      
       // std::cerr<<planet.mass<<std::endl;
       // std::cerr<<planet.radious<<std::endl;
       if(i == 10){
-        planet.radious = 695700;
-        // std::cerr<<(planet.velocity.x)<<std::endl;
+        planet.mass = 1988500*pow(10,24);
+        planet.radious = 695700*1000;
+        
       }
+
       // if(planet.mass == 0){
       //   std::cerr<<data<<std::endl;
       // }
-      position.planet_id = i;
+      if(i<solar_size){
+        planet.planet_id = i-1;
+        position.planet_id = i-1;
+      }else{
+        planet.planet_id = 8;
+        position.planet_id = 8;
+      }
+
+      // std::cerr<<(position.positions[0].x)<<std::endl;
+      // std::cerr<<(planet.planet_id)<<std::endl;
+
+
+
       data1.push_back(planet);
       data2.push_back(position);
 

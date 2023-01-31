@@ -52,11 +52,11 @@ std::string data = "************************************************************
   PlanetData planet;
   PlanetPosition position;
   io.parse_web(planet,position,data);
-  double VX=-6.289921873965062E-01; //km/s
-  double VY=-4.570185694812506E+01;
-  double VZ=-3.675523487391896E+00;
+  double VX=-6.289921873965062E-01*1000; //km/s
+  double VY=-4.570185694812506E+01*1000;
+  double VZ=-3.675523487391896E+00*1000;
   double mass = 3.302 * pow(10,23);
-  double radious = 2440;
+  double radious = 2440*1000;
   EXPECT_DOUBLE_EQ(planet.velocity.x, VX);
   EXPECT_DOUBLE_EQ(planet.velocity.y, VY);
   EXPECT_DOUBLE_EQ(planet.velocity.z, VZ);
