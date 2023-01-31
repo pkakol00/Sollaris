@@ -13,8 +13,8 @@ TEST(IOTest, SavesAndLoads) {
   PlanetData input;
   PlanetPosition posi;
   input.mass = 1.0;
-  input.radious = 2.0;
-  input.velocity.x = 3.0;
+  input.radious = -2.0;
+  input.velocity.x = -3.0;
   input.velocity.y = 4.0;
   input.velocity.z = 5.0;
   Vec3 v(1,1,1);

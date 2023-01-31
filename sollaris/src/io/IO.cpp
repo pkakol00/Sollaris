@@ -50,9 +50,10 @@ using json = nlohmann::json;
   void IO::parse_web(PlanetData &planet, PlanetPosition& pposition, const std::string& data){
     int pos=0;
     Vec3 position;
-    pos = data.find("Mean Radius (km) =",pos) + 18;
+    pos = data.find("Mean Radius (km)",0) + 16;
+    pos = data.find("=",pos) + 1;
     planet.radious = atof(data.c_str()+pos);
-    pos = data.find("Mass x10^",pos) + 9;
+    pos = data.find("Mass x10^",0) + 9;
     int multi = atoi(data.c_str()+pos);
     pos = data.find("=",pos) + 1;
     planet.mass = atof(data.c_str()+pos) * pow(10,multi);
@@ -116,10 +117,20 @@ using json = nlohmann::json;
 
     //"https://ssd.jpl.nasa.gov/api/horizons.api?EPHEM_TYPE=VECTORS&COMMAND='0'&STEP_SIZE='1d'&START_TIME='2023-01-25 00:00'&STOP_TIME='2023-01-25 12:00'&VEC_TABLE=2&CENTER='@0'"
     //+https://ssd.jpl.nasa.gov/api/horizons.api?COMMAND=%270%27&format=text&EPHEM_TYPE=VECTORS&STEP_SIZE=%271d%27&START_TIME=%272023-01-25%2000:00%27&STOP_TIME=%272023-01-25%2012:00%27&VEC_TABLE=2&CENTER=%27@0%27
-    for(int i=0;i<solar_size;i++){
+    for(int i=1;i<=solar_size;i++){
+      if(i == 9){
+        i++;
+      }
+      data.clear();
+
       req="https://ssd.jpl.nasa.gov/api/horizons.api?COMMAND=%27";
       req+=std::to_string(i);
-      req+="%27&format=text&EPHEM_TYPE=VECTORS&STEP_SIZE=%271d%27&START_TIME=%27"+date+"%2000:00%27&STOP_TIME=%27"+date+"%2012:00%27&VEC_TABLE=2&CENTER=%27@0%27";
+      if(i<solar_size){
+        req+="99%27&format=text&EPHEM_TYPE=VECTORS&STEP_SIZE=%271d%27&START_TIME=%27"+date+"%2000:00%27&STOP_TIME=%27"+date+"%2012:00%27&VEC_TABLE=2&CENTER=%27@0%27";
+      }else{
+        req+="%27&format=text&EPHEM_TYPE=VECTORS&STEP_SIZE=%271d%27&START_TIME=%27"+date+"%2000:00%27&STOP_TIME=%27"+date+"%2012:00%27&VEC_TABLE=2&CENTER=%27@0%27";
+      }
+      
       // std::cerr<<req<<std::endl;
       curl_easy_setopt(curl, CURLOPT_URL, req.c_str());
       res = curl_easy_perform(curl);
@@ -129,11 +140,20 @@ using json = nlohmann::json;
       PlanetData planet;
       PlanetPosition position;
 
-      // std::cerr<<data<<std::endl;
+      
 
       parse_web(planet,position,data);
 
       planet.planet_id = i;
+      // std::cerr<<planet.mass<<std::endl;
+      // std::cerr<<planet.radious<<std::endl;
+      if(i == 10){
+        planet.radious = 695700;
+        // std::cerr<<(planet.velocity.x)<<std::endl;
+      }
+      // if(planet.mass == 0){
+      //   std::cerr<<data<<std::endl;
+      // }
       position.planet_id = i;
       data1.push_back(planet);
       data2.push_back(position);
