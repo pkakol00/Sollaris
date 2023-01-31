@@ -4,13 +4,15 @@
 #include <typeinfo>
 #include <sstream>
 
+int __index__ = 0;
+
 ExampleWindow::ExampleWindow()
 : m_VBox_Main(Gtk::ORIENTATION_VERTICAL),
   m_VBox(Gtk::ORIENTATION_VERTICAL),
   m_Frame_Horizontal(),
   position{},
   data{},
-  updateInterval(5.2),
+  updateInterval(0.02),
   jumpInterval(604800.0),
   PE{}
 {
@@ -54,25 +56,22 @@ ExampleButtonBox::ExampleButtonBox(bool horizontal,
        double interval,
        PhysicsEngine* pe,
        std::shared_ptr<std::vector<PlanetPosition>> pos,
-       std::shared_ptr<std::vector<PlanetData>> d)
+       std::shared_ptr<std::vector<PlanetData>> d)       
 : Gtk::Frame(""),
   m_Button_Parameters("Change parameters"),
   m_Button_Add_Planet("Add planet"),
   m_Button_Start("Start"),
   m_Button_Stop("Stop"),
+  m_Button_Save("Save"),
+  m_Button_Load("Load"),
+  m_Button_Load_Web("Load from web"),
   updateInterval(interval),
   timeoutId(-1),
   PE(pe),
   position(pos),
-  data(d)
+  data(d),
+  io()
 {
-  /*
-  PlanetPosition ap; ap.planet_id = 0; ap.positions.push_back({0.000000000001,   0.000000000001, 0.000000000001});
-  PlanetPosition bp; bp.planet_id = 1; bp.positions.push_back({3'000.000000000001, 0.000000000001, 0.000000000001});
-  PlanetData ad {1e26, 1, {10, 20, 30}, {0.1, 0.2, 0.9}, 0};
-  PlanetData bd {1e26, 1, {0,  40, 0},  {0.9, 0.2, 0.3}, 1};
-  position = std::make_shared<std::vector<PlanetPosition>>(std::initializer_list<PlanetPosition>{ap, bp});
-  data = std::make_shared<std::vector<PlanetData>>(std::initializer_list<PlanetData>{ad, bd});*/
   Gtk::ButtonBox* bbox = nullptr;
 
   if(horizontal)
@@ -96,10 +95,20 @@ ExampleButtonBox::ExampleButtonBox(bool horizontal,
     sigc::mem_fun(*this, &ExampleButtonBox::on_button_clicked), "Start"));
   m_Button_Stop.signal_clicked().connect(sigc::bind<Glib::ustring>(
     sigc::mem_fun(*this, &ExampleButtonBox::on_button_clicked), "Stop"));
+  m_Button_Save.signal_clicked().connect(sigc::bind<Glib::ustring>(
+    sigc::mem_fun(*this, &ExampleButtonBox::on_button_clicked), "Save"));
+  m_Button_Load.signal_clicked().connect(sigc::bind<Glib::ustring>(
+    sigc::mem_fun(*this, &ExampleButtonBox::on_button_clicked), "Load"));
+  m_Button_Load_Web.signal_clicked().connect(sigc::bind<Glib::ustring>(
+    sigc::mem_fun(*this, &ExampleButtonBox::on_button_clicked), "Load from web"));
+
   bbox->add(m_Button_Parameters);
   bbox->add(m_Button_Add_Planet);
   bbox->add(m_Button_Start);
   bbox->add(m_Button_Stop);
+  bbox->add(m_Button_Save);
+  bbox->add(m_Button_Load);
+  bbox->add(m_Button_Load_Web);
 }
 
 void ExampleButtonBox::on_button_clicked(Glib::ustring data)
@@ -134,6 +143,64 @@ void ExampleButtonBox::on_button_clicked(Glib::ustring data)
     else
       LOG("Already stopped");
 
+  }
+  else if (data.compare("Save") == 0 || data.compare("Load") == 0) {
+    GtkWidget *dialog;
+    GtkFileChooser *chooser;
+    gint res;
+    GtkFileChooserAction action = GTK_FILE_CHOOSER_ACTION_SAVE;
+    
+    if (data.compare("Save") == 0) {
+
+    dialog = gtk_file_chooser_dialog_new ("Save File",
+                                          nullptr,
+                                          action,
+                                          "_Cancel",
+                                          GTK_RESPONSE_CANCEL,
+                                          "_Save",
+                                           GTK_RESPONSE_ACCEPT,
+                                          NULL);
+    }
+    else {
+
+    dialog = gtk_file_chooser_dialog_new ("Load File",
+                                          nullptr,
+                                          action,
+                                          "_Cancel",
+                                          GTK_RESPONSE_CANCEL,
+                                          "_Load",
+                                           GTK_RESPONSE_ACCEPT,
+                                          NULL);
+    }
+    chooser = GTK_FILE_CHOOSER (dialog);
+
+    gtk_file_chooser_set_do_overwrite_confirmation (chooser, TRUE);
+
+    gtk_file_chooser_set_current_name (chooser,
+                                         "Untitled document");
+    res = gtk_dialog_run (GTK_DIALOG (dialog));
+    if (res == GTK_RESPONSE_ACCEPT)
+      {
+        char *filename;
+
+        filename = gtk_file_chooser_get_filename (chooser);
+        if (data.compare("Save") == 0) {
+          io.write_event(*(this->data), *(this->position), filename);
+        }
+        else {
+          io.read_event(*(this->data), *(this->position), filename);
+          __index__ = this->data->size();
+        }
+
+        g_free (filename);
+      }
+
+    gtk_widget_destroy (dialog);
+  }
+  else if (data.compare("Load from web") == 0) {
+    io.get_web(*(this->data), *(this->position));
+    __index__ = this->data->size();
+    LOG("From web");
   }
   else {
     LOG("Not implemented yet");    
@@ -420,17 +487,13 @@ void myWindow::change_parameters() {
   this->data->at(id).velocity.y = atof(m_yE.get_text().c_str()); 
   this->data->at(id).velocity.z = atof(m_zE.get_text().c_str()); 
 
-  std::deque<Vec3> newQueue;
-  newQueue.push_back({atof(p_xE.get_text().c_str()),
+  this->position->at(id).positions.clear(); 
+  this->position->at(id).positions.push_back({atof(p_xE.get_text().c_str()),
                       atof(p_yE.get_text().c_str()),
                       atof(p_zE.get_text().c_str())});
-  this->position->at(id).positions = newQueue;
-
 }
 
 void myWindow::remove_planet() {
-
-
 
   int id = 0;
   Gtk::TreeModel::iterator iter = m_Combo.get_active();
@@ -473,7 +536,7 @@ void myWindow::add_planet() {
        {m_Color.get_red(),
         m_Color.get_green(),
         m_Color.get_blue()},
-        index
+        __index__
   ));
 
   std::deque<Vec3> newQueue;
@@ -481,9 +544,9 @@ void myWindow::add_planet() {
                       atof(p_yE.get_text().c_str()),
                       atof(p_zE.get_text().c_str())});
 
-  this->position->push_back(PlanetPosition(newQueue, index));
+  this->position->push_back(PlanetPosition(newQueue, __index__));
 
-  index++;
+  __index__++;
 }
 
 void myWindow::on_combo_changed()

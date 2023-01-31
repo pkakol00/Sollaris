@@ -3,7 +3,9 @@
 
 #include "../util/common.h"
 #include "../physics/PhysicsEngine.h"
+#include "../io/IO.h"
 #include <gtkmm.h>
+
 
 class ExampleWindow : public Gtk::Window
 {
@@ -41,7 +43,6 @@ public:
   virtual ~myWindow();
 
 protected:
-  int index = 0;
 
   //Child widgets:
   Gtk::Box m_VBox_Main, m_VBox;
@@ -54,6 +55,7 @@ protected:
   Gtk::Entry p_xE, p_yE, p_zE;
   Gtk::Button m_change, m_remove, m_add;
   Gtk::Button m_start, m_stop;
+
   Gtk::Grid m_grid;
   void change_parameters();
   void remove_planet();
@@ -105,6 +107,7 @@ protected:
   void myWinClose(); 
   Gtk::Button m_Button_Parameters, m_Button_Add_Planet;
   Gtk::Button m_Button_Start, m_Button_Stop;
+  Gtk::Button m_Button_Save, m_Button_Load, m_Button_Load_Web;
   myWindow* window;
   double updateInterval;
   int timeoutId;
@@ -112,6 +115,7 @@ protected:
   gboolean (*GSourceFunc) (gpointer user_data);
   static gboolean MyCallBack(void* data);  
   bool started = 0;
+  IO io;
 };
 
 #endif //GTKMM_EXAMPLEWINDOW_H
