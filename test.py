@@ -2,22 +2,28 @@ from numpy import sin, cos
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from collections import deque
-from sys import stdin
+from sys import stdin, argv
 
-history_len = 1000
-dt = 0.01
+if len(argv) == 2 and argv[1] == "help":
+    print(f"usage: python {argv[0]} <history length> <xlims> <ylims> <zlims> <file path>")
+    exit(0)
+
+dt = 0.02
+steps = 1000
+file = open(argv[8], 'r') if len(argv) >= 9 else stdin
+history_len = int(argv[1]) if len(argv) >= 2 else 1000
+xlims = (float(argv[2]), float(argv[3])) if len(argv) >= 4 else (-5.0e12, 5.0e12)
+ylims = (float(argv[4]), float(argv[5])) if len(argv) >= 6 else (-5.0e12, 5.0e12)
+zlims = (float(argv[6]), float(argv[7])) if len(argv) >= 8 else (-5.0e12, 5.0e12)
 
 fig = plt.figure()
 ax = plt.axes(projection = "3d")
-ax.set(xlim3d = (0, 100), xlabel = "X")
-ax.set(ylim3d = (-5, 5), ylabel = "Y")
-ax.set(zlim3d = (-5, 5), zlabel = "Z")
+ax.set(xlim3d = xlims, xlabel = "X")
+ax.set(ylim3d = ylims, ylabel = "Y")
+ax.set(zlim3d = zlims, zlabel = "Z")
 
 traces = dict()
 history = dict()
-
-# file = stdin
-file = open("data.txt", 'r')
 
 def animate2(iteration):
     ids = []
@@ -53,5 +59,5 @@ def animate2(iteration):
 
     return traces.values()
 
-ani = animation.FuncAnimation(fig, animate2, 1000, interval = dt * 1000, blit = True)
+ani = animation.FuncAnimation(fig, animate2, steps, interval = dt * 1000, blit = True)
 plt.show()
