@@ -184,4 +184,12 @@ void PhysicsEngine::update() {
   updatePositions();
   auto collisions = findCollisions();
   resolveCollisions(collisions);
+
+  for(const auto &p : *position) {
+    std::cout << p.planet_id << ";"
+              << p.positions.back().x << ";"
+              << p.positions.back().y << ";"
+              << p.positions.back().z << "\n";
+  }
+  std::cout << "next\n";
 }
