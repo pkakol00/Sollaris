@@ -4,14 +4,15 @@
 #include <capnp/serialize-packed.h>
 #include <cstring>
 #include <string>
+#include <iostream>
 
 //capnp compile -oc++ serializable.capnp
 //g++ -o serializable serializable.cpp serializable.capnp.c++ `pkg-config --cflags --libs capnp`
 //./serializable
 
-PlanetPosition::PlanetPosition() {};
-
 PlanetPosition::~PlanetPosition() {};
+
+PlanetPosition::PlanetPosition() {};
 
 PlanetPosition::PlanetPosition(std::deque<Vec3> positions, int planet_id) : positions(positions), planet_id(planet_id) {}
 
@@ -23,7 +24,7 @@ PlanetData::PlanetData(double mass, double radious, Vec3 velocity, Vec3 colour, 
     mass(mass), radious(radious), velocity(velocity), colour(colour), planet_id(planet_id) {}
 
 
-std::string& PlanetData::serialize(){
+std::string PlanetData::serialize(){
     ::capnp::MallocMessageBuilder message_builder;
     PlData::Builder message = message_builder.initRoot<PlData>();
 
@@ -44,11 +45,11 @@ std::string& PlanetData::serialize(){
 
     auto bytes = encoded_array.asBytes();
     std::string data(bytes.begin(), bytes.end());
-    std::string* toReturn = new std::string(data);
-    return *toReturn;
+    std::string toReturn = std::string(data);
+    return toReturn;
 }
 
-PlanetData* PlanetData::deserialize(const std::string& data){
+PlanetData PlanetData::deserialize(const std::string& data){
     PlData::Reader objRestore;
 
     if(reinterpret_cast<uintptr_t>(data.data()) % sizeof(void*) == 0) {
@@ -71,13 +72,13 @@ PlanetData* PlanetData::deserialize(const std::string& data){
         capnp::FlatArrayMessageReader message2(dataWordsPtr);
         objRestore = message2.getRoot<PlData>();
     }
-    return new PlanetData(objRestore.getMass(), objRestore.getRadious(), 
+    return PlanetData(objRestore.getMass(), objRestore.getRadious(), 
         Vec3(objRestore.getV1(), objRestore.getV2(), objRestore.getV3()),
         Vec3(objRestore.getColourX(), objRestore.getColourY(), objRestore.getColourZ()), objRestore.getPlanetId());
 }
 
 
-std::string& PlanetPosition::serialize(){
+std::string PlanetPosition::serialize(){
     ::capnp::MallocMessageBuilder message_builder;
     PlPosition::Builder message = message_builder.initRoot<PlPosition>();
 
@@ -99,12 +100,12 @@ std::string& PlanetPosition::serialize(){
 
     auto bytes = encoded_array.asBytes();
     std::string data(bytes.begin(), bytes.end());
-    std::string* toReturn = new std::string(data);
-    return *toReturn;
+    std::string toReturn = std::string(data);
+    return toReturn;
 }
 
 
-PlanetPosition* PlanetPosition::deserialize(const std::string& data){
+PlanetPosition PlanetPosition::deserialize(const std::string& data){
     PlPosition::Reader objRestore;
 
     if(reinterpret_cast<uintptr_t>(data.data()) % sizeof(void*) == 0) {
@@ -131,5 +132,5 @@ PlanetPosition* PlanetPosition::deserialize(const std::string& data){
     for(Vector::Reader v : objRestore.getPositions()) {
         vector.push_back(Vec3(v.getX(), v.getY(), v.getZ()));
     }
-    return new PlanetPosition(vector, objRestore.getPlanetId());
+    return PlanetPosition(vector, objRestore.getPlanetId());
 }

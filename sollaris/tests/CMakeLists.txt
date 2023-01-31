@@ -10,6 +10,8 @@ set(TEST_SOURCES
   DummyTest.cpp
   Vec3Test.cpp
   PhysicsTest.cpp
+  IOTest.cpp
+  ../src/util/serializable.cpp
   ../src/util/common.cpp
   ../src/util/common.h
   ../src/physics/PhysicsEngine.cpp
@@ -44,5 +46,3 @@ target_include_directories(
 include(GoogleTest)
 
 gtest_discover_tests(${TEST_NAME})
-
-

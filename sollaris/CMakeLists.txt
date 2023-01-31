@@ -46,11 +46,13 @@ set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 20)
 target_link_libraries(${PROJECT_NAME} 
   ${GTKMM_LIBRARIES}
   ${CAPNP_LIBRARIES}
+  ${CURL_LIBRARIES}
 )
 
 target_include_directories(${PROJECT_NAME} PUBLIC 
   ${GTKMM_INCLUDE_DIRS}
   ${CAPNP_INCLUDE_DIRS}
+  ${CURL_INCLUDE_DIRS}
 )
 
 target_compile_options(${PROJECT_NAME} PUBLIC ${GTKMM_CFLAGS_OTHER})
@@ -58,6 +60,4 @@ target_compile_options(${PROJECT_NAME} PUBLIC ${GTKMM_CFLAGS_OTHER})
 target_link_libraries(${PROJECT_NAME}  ${CURL_LIBRARIES})
 target_include_directories(${PROJECT_NAME} PUBLIC ${CURL_INCLUDE_DIRS})
 target_compile_options(${PROJECT_NAME} PUBLIC ${CURL_CFLAGS_OTHER})
-
-
 add_subdirectory(tests)
