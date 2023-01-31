@@ -11,15 +11,19 @@
 
 using json = nlohmann::json;
 
-  void IO::write_event(std::vector<PlanetData>& data, const std::string& filename){
+  void IO::write_event(std::vector<PlanetData> data1, std::vector<PlanetPosition> data2, const std::string& filename){
     std::ofstream file(filename,std::ios::binary);
     std::string ser;
     std::size_t size;
     if(!file.is_open()){
       throw;
     }
-    for(int i = 0; i<data.size();i++){
-      ser = data[i].serialize();
+    for(int i = 0; i<data1.size();i++){
+      ser = data1[i].serialize();
+      size = ser.size();
+      file.write((char*)(&size),sizeof(ser.size()));
+      file.write(ser.data(),ser.size());
+      ser = data2[i].serialize();
       size = ser.size();
       file.write((char*)(&size),sizeof(ser.size()));
       file.write(ser.data(),ser.size());
@@ -30,23 +34,22 @@ using json = nlohmann::json;
     // write_file(str,filename);
   }
 
-  std::vector<PlanetData> IO::read_event(const std::string& filename){
-    std::string data;
-    if(filename.compare(0,4,"http")==0){
-      return get_web(filename);
-      // data = read_web(filename);
-      // return parse_web(data);
-    }else{
-      return read_file(filename);
+  void IO::read_event(std::vector<PlanetData>& data1, std::vector<PlanetPosition>& data2, const std::string& filename){
+    // std::string data;
+    // if(filename.compare(0,4,"http")==0){
+    //   return get_web(filename);
+    //   // data = read_web(filename);
+    //   // return parse_web(data);
+    // }else{
+      return read_file(data1,data2,filename);
       // data = read_file(filename);
       // return parse_file(data);
-    }
+    // }
   }
 
-  PlanetData IO::parse_web(const std::string& data){
+  void IO::parse_web(PlanetData &planet, PlanetPosition& pposition, const std::string& data){
     int pos=0;
     Vec3 position;
-    PlanetData planet;
     pos = data.find("Mean Radius (km) =",pos) + 18;
     planet.radious = atof(data.c_str()+pos);
     pos = data.find("Mass x10^",pos) + 9;
@@ -65,7 +68,7 @@ using json = nlohmann::json;
     planet.velocity.y = atof(data.c_str()+pos);
     pos = data.find("VZ=",pos) + 3;
     planet.velocity.z = atof(data.c_str()+pos);
-    return planet;
+    pposition.positions.push_back(position);
   }
 
 
@@ -80,12 +83,13 @@ using json = nlohmann::json;
       return size * nmemb;
   }
 
-  std::vector<PlanetData> IO::get_web(const std::string& path){
+  void IO::get_web(std::vector<PlanetData>& data1, std::vector<PlanetPosition>& data2, std::string date){
     std::string req;
     std::string data;
 
     const int solar_size = 10;
-    std::vector<PlanetData> planets(solar_size);
+    data1.clear();
+    data2.clear();
     std::array<std::string,solar_size> solar_names={
       "Mercury",
       "Venus",
@@ -106,27 +110,39 @@ using json = nlohmann::json;
 
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &data);
+    if(date == ""){
+      date = "2023-01-25";
+    }
 
     //"https://ssd.jpl.nasa.gov/api/horizons.api?EPHEM_TYPE=VECTORS&COMMAND='0'&STEP_SIZE='1d'&START_TIME='2023-01-25 00:00'&STOP_TIME='2023-01-25 12:00'&VEC_TABLE=2&CENTER='@0'"
     //+https://ssd.jpl.nasa.gov/api/horizons.api?COMMAND=%270%27&format=text&EPHEM_TYPE=VECTORS&STEP_SIZE=%271d%27&START_TIME=%272023-01-25%2000:00%27&STOP_TIME=%272023-01-25%2012:00%27&VEC_TABLE=2&CENTER=%27@0%27
     for(int i=0;i<solar_size;i++){
       req="https://ssd.jpl.nasa.gov/api/horizons.api?COMMAND=%27";
       req+=std::to_string(i);
-      req+="%27&format=text&EPHEM_TYPE=VECTORS&STEP_SIZE=%271d%27&START_TIME=%272023-01-25%2000:00%27&STOP_TIME=%272023-01-25%2012:00%27&VEC_TABLE=2&CENTER=%27@0%27";
+      req+="%27&format=text&EPHEM_TYPE=VECTORS&STEP_SIZE=%271d%27&START_TIME=%27"+date+"%2000:00%27&STOP_TIME=%27"+date+"%2012:00%27&VEC_TABLE=2&CENTER=%27@0%27";
+      // std::cerr<<req<<std::endl;
       curl_easy_setopt(curl, CURLOPT_URL, req.c_str());
       res = curl_easy_perform(curl);
       if(res != CURLE_OK){
         fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
       }
-      
-      planets.push_back(parse_web(data));
+      PlanetData planet;
+      PlanetPosition position;
+
+      // std::cerr<<data<<std::endl;
+
+      parse_web(planet,position,data);
+
+      planet.planet_id = i;
+      position.planet_id = i;
+      data1.push_back(planet);
+      data2.push_back(position);
 
       req.clear();
     }
 
     curl_easy_cleanup(curl);
 
-    return planets;
   }
 
   // std::vector<PlanetData> IO::parse_file_json(const std::string& data){
@@ -182,31 +198,38 @@ using json = nlohmann::json;
     return "";
   }
 
-  std::vector<PlanetData> IO::read_file(const std::string& path){
-    std::ifstream file(path,std::ios::binary);
+  void IO::read_file(std::vector<PlanetData>& data1, std::vector<PlanetPosition>& data2, const std::string& filename){
+    data1.clear();
+    data2.clear();
+
+    std::ifstream file(filename,std::ios::binary);
     if(!file.is_open()){
       throw;
     }
     std::size_t size;
     
-    std::vector<PlanetData> ret;
-
     while(1){
       std::string data;
       PlanetData planet;
+      PlanetPosition position;
       file.read((char*)(&size),sizeof(size));
       if(file.eof()){
         break;
       }
       data.resize(size);
       file.read(&data[0],size);
-      // std::cerr<<data<<std::endl;
       planet = planet.deserialize(data);
-      ret.push_back(planet);
+      data1.push_back(planet);
+
+      file.read((char*)(&size),sizeof(size));
+      data.resize(size);
+      file.read(&data[0],size);
+      position = position.deserialize(data);
+      data2.push_back(position);
     }
 
     file.close();
-    return ret;
+
   }
 
   //   std::string IO::read_file(const std::string& path){
