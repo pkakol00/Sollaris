@@ -1,39 +1,57 @@
-# importing mplot3d toolkits, numpy and matplotlib
-from mpl_toolkits import mplot3d
-import numpy as np
+from numpy import sin, cos
 import matplotlib.pyplot as plt
-from sys import argv
+import matplotlib.animation as animation
+from collections import deque
+from sys import stdin
+
+history_len = 1000
+dt = 0.01
 
 fig = plt.figure()
+ax = plt.axes(projection = "3d")
+ax.set(xlim3d = (0, 100), xlabel = "X")
+ax.set(ylim3d = (-5, 5), ylabel = "Y")
+ax.set(zlim3d = (-5, 5), zlabel = "Z")
 
-# syntax for 3-D projection
-ax = plt.axes(projection ='3d')
+traces = dict()
+history = dict()
 
-planets = None
+# file = stdin
+file = open("data.txt", 'r')
 
-file = argv[1]
+def animate2(iteration):
+    ids = []
+    while True:
+        line = file.readline().strip()
+        if line == "":
+            return traces.values()
 
-with open(file) as f:
-    line = f.readline()
-    f.seek(0)
-    planets = [[[], [], []] for _ in range(line.count(") (") + 1)]
+        if line == "next":
+            break
 
-    for line in f:
-        line = line.replace(") (", ";").replace("(", "").replace(")", "").replace(" ", "")
-        for i, planet in enumerate(line.split(";")):
-            tmp = [float(a) for a in planet.split(',')]
-            planets[i][0].append(tmp[0])
-            planets[i][1].append(tmp[1])
-            planets[i][2].append(tmp[2])
+        line = line.split(";")
+        nums = [float(n) for n in line]
+        id = int(nums[0])
+        ids.append(id)
 
-# plotting
-for i, planet in enumerate(planets):
-    ax.plot3D(planet[0], planet[1], planet[2])
+        if id not in traces:
+            traces[id] = ax.plot([], [], [], '.-', lw = 1, ms = 2)[0]
+            history[id] = [deque(maxlen = history_len) for _ in range(3)]
 
-plt.legend(["Sun", "Mercury", "Venus", "Earth", "Mars", "Jupiter", "Saturn", "Uranus", "Neptune"])
+        for axis in range(3):
+            history[id][axis].appendleft(nums[axis + 1])
 
+    for id in history.keys():
+        if id not in ids:
+            if len(history[id][0]) != 0:
+                for axis in range(3):
+                    history[id][axis].pop()
 
-plt.title("Układ słoneczny, 165 lat co 12h")
+    for id in history.keys():
+        traces[id].set_data(history[id][0], history[id][1])
+        traces[id].set_3d_properties(history[id][2])
+
+    return traces.values()
+
+ani = animation.FuncAnimation(fig, animate2, 1000, interval = dt * 1000, blit = True)
 plt.show()
-
-
